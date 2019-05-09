@@ -8,7 +8,7 @@ namespace BankApi.Models
 {
     public class ProductContext : DbContext
     {
-        DbSet<Product> products { get; set; }
+        DbSet<Product> Products { get; set; }
 
         public ProductContext(DbContextOptions<ProductContext> options) : base(options)
         {

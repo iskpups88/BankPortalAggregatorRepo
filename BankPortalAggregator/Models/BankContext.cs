@@ -8,12 +8,14 @@ namespace BankPortalAggregator.Models
 {
     public class BankContext : DbContext
     {
-        DbSet<Bank> Banks { get; set; }
-        DbSet<Deposit> Deposits { get; set; }
+        public DbSet<Bank> Banks { get; set; }
+        public DbSet<Deposit> Deposits { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Endpoint> Endpoints { get; set; }
 
         public BankContext(DbContextOptions<BankContext> options) : base(options)
         {
-            Database.EnsureCreated();
+            //Database.EnsureCreated();
         }
     }
 }
