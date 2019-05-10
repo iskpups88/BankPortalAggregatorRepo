@@ -13,7 +13,7 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="8.1.0" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="6.1.0" />
-    <PackageReference Include="Google.Apis.Oauth2.v2" Version="1.38.2.1532" />
+    <PackageReference Include="Google.Apis.Oauth2.v2" Version="1.39.0.1532" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="2.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.4">
@@ -26,21 +26,23 @@
 
   <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
+    <Compile Remove="ClientApp\src\components\Новая папка\**" />
+    <Compile Remove="ClientApp\src\Новая папка\**" />
     <Content Remove="$(SpaRoot)**" />
+    <Content Remove="ClientApp\src\components\Новая папка\**" />
+    <Content Remove="ClientApp\src\Новая папка\**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20190506213130_EndPointAdded.cs" />
-    <Compile Remove="Migrations\20190506213130_EndPointAdded.Designer.cs" />
+    <EmbeddedResource Remove="ClientApp\src\components\Новая папка\**" />
+    <EmbeddedResource Remove="ClientApp\src\Новая папка\**" />
+    <None Remove="ClientApp\src\components\Новая папка\**" />
+    <None Remove="ClientApp\src\Новая папка\**" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\BankApi\BankApi.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="ClientApp\src\services\" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using BankPortalAggregator.Models;
+using BankPortalAggregator.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace BankPortalAggregator.Controllers
 {
@@ -18,11 +22,13 @@ namespace BankPortalAggregator.Controllers
     {
         private readonly BankContext _context;
         private readonly IMapper _mapper;
+        private readonly IUserService _userService;
 
-        public ProductsController(BankContext context, IMapper mapper)
+        public ProductsController(BankContext context, IMapper mapper, IUserService userService)
         {
             _context = context;
             _mapper = mapper;
+            _userService = userService;
         }
 
         [HttpGet]
@@ -37,12 +43,56 @@ namespace BankPortalAggregator.Controllers
         }
 
         [HttpPost]
-        //[Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         [Route("GetAuthorizeResource")]
-        public ActionResult GetAuthorizeResource([FromBody] DepositDto product)
+        public async Task<ActionResult> GetAuthorizeResource([FromBody] DepositDto product)
         {
-            
-            return Ok(product);
+            try
+            {
+                var userId = HttpContext.User.Claims.Where(c => c.Type == "Sub").SingleOrDefault().Value;
+
+                if (userId == null)
+                {
+                    return BadRequest();
+                }
+
+                var user = _userService.GetById(int.Parse(userId));
+
+                var endpoint = _context.Endpoints.Join(_context.Deposits,
+                    e => e.BankId,
+                    d => d.BankId,
+                    (e, d) => new
+                    {
+                        Endpoint = e.EndpointUrl,
+                        DepositId = d.Id,
+                        BankDepositId = d.BankDepositId
+                    })
+                    .Where(e => e.DepositId == product.Id).FirstOrDefault();
+
+                HttpClient client = new HttpClient();
+
+                var json = JsonConvert.SerializeObject(new
+                {
+                    ProductId = endpoint.BankDepositId.Value.ToString()
+                });
+
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("tokens", user.AccessToken + "," + user.IdToken);
+
+                string path = endpoint.Endpoint + "Product";
+                HttpResponseMessage response = await client.PostAsync(path, content);
+
+                if (response.IsSuccessStatusCode)
+                {
+
+                }
+
+                return Ok(product);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // GET: api/Products

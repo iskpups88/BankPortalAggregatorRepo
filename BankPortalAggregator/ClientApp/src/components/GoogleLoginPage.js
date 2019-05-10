@@ -1,12 +1,13 @@
 ﻿import React, { Component } from 'react';
 import { GoogleLogin } from 'react-google-login';
 import { GoogleLogout } from 'react-google-login';
+import { userService } from '../services/userService';
 
 export class GoogleLoginPage extends Component {
     displayName = GoogleLoginPage.name
 
     constructor(props) {
-        super(props);       
+        super(props);
         let isUserSingedIn = JSON.parse(localStorage.getItem('user')) ? true : false;
         this.state = {
             isSignedIn: isUserSingedIn
@@ -17,20 +18,7 @@ export class GoogleLoginPage extends Component {
         this.setState({ isSignedIn: true })
         console.log(response);
 
-        var options = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code: response.code })
-        };
-
-        fetch('api/account/login', options)
-            .then(this.handleResponse, this.handleError)
-            .then(user => {
-                console.log(user);
-                if (user && user.token) {
-                    localStorage.setItem('user', JSON.stringify(user));
-                }
-            });
+        userService.login(response.code);
     }
 
     errorResponseGoogle = (response) => {
@@ -38,30 +26,9 @@ export class GoogleLoginPage extends Component {
     }
 
     logout = (response) => {
-        this.setState({ isSignedIn: false });
-        localStorage.removeItem('user');
         console.log(response);
-    }
-
-    handleResponse(response) {
-        return new Promise((resolve, reject) => {
-            if (response.ok) {
-                // return json if it was returned in the response
-                var contentType = response.headers.get("content-type");
-                if (contentType && contentType.includes("application/json")) {
-                    response.json().then(json => resolve(json));
-                } else {
-                    resolve();
-                }
-            } else {
-                // return error message from response body
-                response.text().then(text => reject(text));
-            }
-        });
-    }
-
-    handleError(error) {
-        return Promise.reject(error && error.message);
+        this.setState({ isSignedIn: false });
+        userService.logout()
     }
 
     render() {

@@ -73,7 +73,7 @@ namespace BankPortalAggregator.Services
 
         public User GetById(int id)
         {
-            throw new NotImplementedException();
+            return _context.Users.SingleOrDefault(u => u.Id == id);
         }
 
         public User GetBySub(string sub)
@@ -92,6 +92,8 @@ namespace BankPortalAggregator.Services
 
             user.Name = userParam.Name;
             user.Surname = userParam.Surname;
+            user.IdToken = userParam.IdToken;
+            user.AccessToken = userParam.AccessToken;
             if (userParam.RefreshToken != null)
             {
                 user.RefreshToken = userParam.RefreshToken;

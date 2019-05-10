@@ -14,8 +14,7 @@ namespace BankPortalAggregator.Helpers
 {
     public class TokenHelper
     {
-        private IConfiguration _configuration;
-        public BankContext Context { get; set; }
+        private readonly IConfiguration _configuration;
 
         public TokenHelper(IConfiguration configuration, BankContext context)
         {
@@ -40,14 +39,14 @@ namespace BankPortalAggregator.Helpers
         //    return null;
         //}
 
-        public async Task<GoogleJsonWebSignature.Payload> Validate(string accessToken)
+        public async Task<GoogleJsonWebSignature.Payload> Validate(string idToken)
         {
             var settings = new GoogleJsonWebSignature.ValidationSettings()
             {
                 Audience = new List<string>() { _configuration["Authentication:Google:ClientId"] },
             };
 
-            GoogleJsonWebSignature.Payload payload = await GoogleJsonWebSignature.ValidateAsync(accessToken, settings);
+            GoogleJsonWebSignature.Payload payload = await GoogleJsonWebSignature.ValidateAsync(idToken, settings);
             return payload;
         }
 
@@ -55,15 +54,14 @@ namespace BankPortalAggregator.Helpers
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, tokenInfo.Email),
-                new Claim(ClaimsIdentity.DefaultNameClaimType, tokenInfo.Name),
-                new Claim(ClaimsIdentity.DefaultNameClaimType, tokenInfo.Surname),
-                new Claim(ClaimsIdentity.DefaultNameClaimType, tokenInfo.Sub),
+                new Claim(ClaimTypes.Email, tokenInfo.Email),
+                new Claim(ClaimTypes.Name, tokenInfo.Name),
+                new Claim(ClaimTypes.Surname, tokenInfo.Surname),
+                new Claim("Sub", tokenInfo.Id.ToString()),
              };
 
             ClaimsIdentity claimsIdentity =
-            new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType,
-                ClaimsIdentity.DefaultRoleClaimType);
+            new ClaimsIdentity(claims, "Token");
 
             var now = DateTime.UtcNow;
 
@@ -119,7 +117,8 @@ namespace BankPortalAggregator.Helpers
                     Name = payload.Name,
                     Surname = payload.FamilyName,
                     RefreshToken = tokenInfo.refresh_token,
-                    AccessToken = tokenInfo.access_token
+                    AccessToken = tokenInfo.access_token,
+                    IdToken = tokenInfo.id_token
                 };
 
                 return user;

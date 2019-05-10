@@ -1,4 +1,5 @@
 ﻿import React, { Component } from 'react';
+import { requestHelper } from '../helpers/RequestHelper';
 
 export class Product extends Component {
     displayName = Product.name
@@ -11,12 +12,13 @@ export class Product extends Component {
         if (user && user.token) {
             var options = {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + user.token },
+                headers: { 'Content-Type': 'application/json', ...requestHelper.authHeader() },
                 body: JSON.stringify({ Id: this.props.data.id })
             };
 
             fetch('api/products/GetAuthorizeResource', options)
-                .then(response => console.log(response))        ;
+                .then(requestHelper.handleResponse, requestHelper.handleError)
+                .then(response => console.log(response));
         }
         console.log(this.props.data.id);
     }

@@ -50,7 +50,7 @@ namespace BankPortalAggregator.Controllers
         }
 
         [HttpPost]
-        [Route("login")]
+        [Route("Login")]
         public async Task<ActionResult> Login([FromBody] GoogleToken accessToken)
         {
             try
