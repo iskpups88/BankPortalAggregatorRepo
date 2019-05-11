@@ -18,13 +18,13 @@ namespace BankPortalAggregator.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductsController : ControllerBase
+    public class DepositsController : ControllerBase
     {
         private readonly BankContext _context;
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
 
-        public ProductsController(BankContext context, IMapper mapper, IUserService userService)
+        public DepositsController(BankContext context, IMapper mapper, IUserService userService)
         {
             _context = context;
             _mapper = mapper;
@@ -65,29 +65,27 @@ namespace BankPortalAggregator.Controllers
                     {
                         Endpoint = e.EndpointUrl,
                         DepositId = d.Id,
-                        BankDepositId = d.BankDepositId
+                        d.BankDepositId
                     })
                     .Where(e => e.DepositId == product.Id).FirstOrDefault();
 
-                HttpClient client = new HttpClient();
-
-                var json = JsonConvert.SerializeObject(new
+                using (HttpClient client = new HttpClient())
                 {
-                    ProductId = endpoint.BankDepositId.Value.ToString()
-                });
+                    var json = JsonConvert.SerializeObject(new
+                    {
+                        ProductId = endpoint.BankDepositId.Value.ToString()
+                    });
 
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("tokens", user.AccessToken + "," + user.IdToken);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("tokens", user.AccessToken + "," + user.IdToken);
 
-                string path = endpoint.Endpoint + "Product";
-                HttpResponseMessage response = await client.PostAsync(path, content);
+                    string path = endpoint.Endpoint + "Deposits";
+                    HttpResponseMessage response = await client.PostAsync(path, content);
 
-                if (response.IsSuccessStatusCode)
-                {
+                    response.EnsureSuccessStatusCode();
 
+                    return Ok(product);
                 }
-
-                return Ok(product);
             }
             catch (Exception ex)
             {

@@ -35,7 +35,7 @@ export class NavMenu extends Component {
             </LinkContainer>
             <LinkContainer to={'/products'}>
               <NavItem>
-                <Glyphicon glyph='th-list' /> Get products
+                <Glyphicon glyph='th-list' /> Вклады
               </NavItem>
             </LinkContainer>
             <LinkContainer to={'/login'}>

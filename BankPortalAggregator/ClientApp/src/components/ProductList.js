@@ -1,5 +1,5 @@
 ﻿import React, { Component } from 'react';
-import { Product } from './Product';
+import { ProductRouter } from './Product';
 
 export class ProductList extends Component {
     displayName = ProductList.name
@@ -8,7 +8,7 @@ export class ProductList extends Component {
         super(props);
         this.state = { products: [], loading: true };
 
-        fetch('api/Products/')
+        fetch('api/Deposits/')
             .then(response => response.json())
             .then(data => {
                 this.setState({ products: data, loading: false });
@@ -29,7 +29,7 @@ export class ProductList extends Component {
                 </thead>
                 <tbody>
                     {products.map(product =>
-                        <Product key={product.id} data={product} />
+                        <ProductRouter key={product.id} data={product} />
                     )}
                 </tbody>
             </table>
@@ -43,7 +43,7 @@ export class ProductList extends Component {
 
         return (
             <div>
-                <h1>Вклады</h1>                
+                <h1>Вклады</h1>
                 {contents}
             </div>
         );

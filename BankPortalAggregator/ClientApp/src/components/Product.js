@@ -1,10 +1,19 @@
 ﻿import React, { Component } from 'react';
 import { requestHelper } from '../helpers/RequestHelper';
+import { withRouter } from "react-router";
 
-export class Product extends Component {
+class Product extends Component {
     displayName = Product.name
-
-    getInputRef = (node) => { this._inputRef = node; }
+    constructor(props) {
+        super(props);
+        this.state = {
+            id: props.data.id,
+            name: props.data.name,
+            bankName: props.data.bank,
+            percent: props.data.percent,
+            minSum: props.data.minSum
+        };
+    }
 
     onClick = (e) => {
         e.preventDefault();
@@ -13,26 +22,31 @@ export class Product extends Component {
             var options = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', ...requestHelper.authHeader() },
-                body: JSON.stringify({ Id: this.props.data.id })
+                body: JSON.stringify({ Id: this.state.id })
             };
 
-            fetch('api/products/GetAuthorizeResource', options)
+            fetch('api/Deposits/GetAuthorizeResource', options)
                 .then(requestHelper.handleResponse, requestHelper.handleError)
                 .then(response => console.log(response));
+        } else {
+            this.props.history.push('/login');
         }
-        console.log(this.props.data.id);
+        console.log(this.state.id);
     }
 
     render() {
         return (
             <tr>
-                <td>{this.props.data.bank + ', ' + this.props.data.name}</td>
-                <td>{this.props.data.percent}</td>
-                <td>{this.props.data.minSum}</td>
+                <td>{this.state.bankName + ', ' + this.state.name}</td>
+                <td>{this.state.percent}</td>
+                <td>{this.state.minSum}</td>
                 <td></td>
-                <td><a onClick={this.onClick} className="btn btn-primary">Открыть вклад</a></td>
+                <td>
+                    <a onClick={this.onClick} className="btn btn-primary">Открыть вклад</a>
+                </td>
             </tr>
         )
     }
 }
 
+export const ProductRouter = withRouter(Product);

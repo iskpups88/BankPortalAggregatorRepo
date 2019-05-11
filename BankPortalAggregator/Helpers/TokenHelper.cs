@@ -86,22 +86,23 @@ namespace BankPortalAggregator.Helpers
 
         public async Task<User> ExchangeAuthorizationCode(string code)
         {
-            HttpClient client = new HttpClient();
-
-            var content = new FormUrlEncodedContent(new[]
+            using (HttpClient client = new HttpClient())
             {
+
+                var content = new FormUrlEncodedContent(new[]
+                {
                 new KeyValuePair<string, string>("code", code),
                 new KeyValuePair<string, string>("client_id", _configuration["Authentication:Google:ClientId"]),
                 new KeyValuePair<string, string>("client_secret", _configuration["Authentication:Google:ClientSecret"]),
                 new KeyValuePair<string, string>("redirect_uri", "https://localhost:44345"),
-                new KeyValuePair<string, string>("grant_type", "authorization_code"),
-            });
+                new KeyValuePair<string, string>("grant_type", "authorization_code")
+                });
 
-            string path = "https://www.googleapis.com/oauth2/v4/token";
-            HttpResponseMessage response = await client.PostAsync(path, content);
+                string path = "https://www.googleapis.com/oauth2/v4/token";
+                HttpResponseMessage response = await client.PostAsync(path, content);
 
-            if (response.IsSuccessStatusCode)
-            {
+                response.EnsureSuccessStatusCode();
+
                 GoogleCodeExchange tokenInfo = await response.Content.ReadAsAsync<GoogleCodeExchange>();
                 var settings = new GoogleJsonWebSignature.ValidationSettings()
                 {
@@ -122,10 +123,6 @@ namespace BankPortalAggregator.Helpers
                 };
 
                 return user;
-            }
-            else
-            {
-                throw new Exception("Bad exchange request");
             }
         }
 
