@@ -9,8 +9,10 @@ export class GoogleLoginPage extends Component {
     constructor(props) {
         super(props);
         let isUserSingedIn = JSON.parse(localStorage.getItem('user')) ? true : false;
+
         this.state = {
-            isSignedIn: isUserSingedIn
+            isSignedIn: isUserSingedIn,
+            redirectUrl: this.props.location.state
         };
     }
 
@@ -19,6 +21,10 @@ export class GoogleLoginPage extends Component {
         console.log(response);
 
         userService.login(response.code);
+        let returnUrl = this.state.redirectUrl;
+        if (returnUrl) {
+            this.props.history.push(returnUrl.redirectUrl + '');
+        }
     }
 
     errorResponseGoogle = (response) => {
@@ -39,11 +45,11 @@ export class GoogleLoginPage extends Component {
                 onSuccess={this.successResponseGoogle}
                 onFailure={this.errorResponseGoogle}
                 cookiePolicy='none'
-                redirectUri='https://localhost:44345/GoogleCallBack'
-                uxMode='redirect'
+                //redirectUri='https://localhost:44345/GoogleCallBack'
+                //uxMode='redirect'
                 accessType='offline'
                 responseType='code'
-                prompt='consent'
+                //prompt='none'
             />
             :
             <GoogleLogout

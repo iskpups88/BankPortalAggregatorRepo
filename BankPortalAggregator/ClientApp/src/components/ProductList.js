@@ -22,8 +22,8 @@ export class ProductList extends Component {
                     <tr>
                         <th>Название, банк</th>
                         <th>Ставка, %</th>
-                        <th>Минимальная сумма, ₽</th>
-                        <th>Срок</th>
+                        <th>Сумма вклада</th>
+                        <th width='150px'>Срок</th>
                         <th></th>
                     </tr>
                 </thead>

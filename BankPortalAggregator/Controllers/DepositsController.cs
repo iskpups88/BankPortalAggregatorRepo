@@ -44,7 +44,6 @@ namespace BankPortalAggregator.Controllers
 
         [HttpPost]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        [Route("GetAuthorizeResource")]
         public async Task<ActionResult> GetAuthorizeResource([FromBody] DepositDto product)
         {
             try
@@ -73,7 +72,10 @@ namespace BankPortalAggregator.Controllers
                 {
                     var json = JsonConvert.SerializeObject(new
                     {
-                        ProductId = endpoint.BankDepositId.Value.ToString()
+                        ProductId = endpoint.BankDepositId.Value,
+                        product.DepositVariations[0].Term,
+                        product.DepositVariations[0].Percent,
+                        product.Sum
                     });
 
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -97,7 +99,8 @@ namespace BankPortalAggregator.Controllers
         [HttpGet]
         public async Task<IEnumerable<DepositDto>> GetDeposits()
         {
-            var query = _context.Deposits.Include(d => d.Bank).Where(d => d.IsActive == true);
+            var query = _context.Deposits.Include(d => d.Bank).Include(d => d.DepositVariations).Where(d => d.IsActive == true);
+
             return await _mapper.ProjectTo<DepositDto>(query).ToListAsync();
         }
 
@@ -156,19 +159,19 @@ namespace BankPortalAggregator.Controllers
         }
 
         // POST: api/Products
-        [HttpPost]
-        public async Task<IActionResult> PostDeposit([FromBody] Deposit deposit)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+        //[HttpPost]
+        //public async Task<IActionResult> PostDeposit([FromBody] Deposit deposit)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
 
-            _context.Deposits.Add(deposit);
-            await _context.SaveChangesAsync();
+        //    _context.Deposits.Add(deposit);
+        //    await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetDeposit", new { id = deposit.Id }, deposit);
-        }
+        //    return CreatedAtAction("GetDeposit", new { id = deposit.Id }, deposit);
+        //}
 
         // DELETE: api/Products/5
         [HttpDelete("{id}")]

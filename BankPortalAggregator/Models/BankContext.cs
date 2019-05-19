@@ -1,8 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BankPortalAggregator.Models
 {
@@ -12,6 +8,7 @@ namespace BankPortalAggregator.Models
         public DbSet<Deposit> Deposits { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Endpoint> Endpoints { get; set; }
+        public DbSet<DepositVariation> DepositVariations { get; set; }
 
         public BankContext(DbContextOptions<BankContext> options) : base(options)
         {
