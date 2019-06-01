@@ -1,9 +1,5 @@
-using System.Text;
 using AutoMapper;
-using BankPortalAggregator.Helpers;
 using BankPortalAggregator.Models;
-using BankPortalAggregator.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +7,6 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 
 namespace BankPortalAggregator
 {
@@ -24,64 +19,48 @@ namespace BankPortalAggregator
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddDbContext<BankContext>(options =>
-            //    options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
-
             services.AddDbContext<BankContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddAutoMapper();
-            services.AddScoped<TokenHelper>();
-            services.AddScoped<IUserService, UserService>();
 
-            //services.AddAuthentication().AddGoogle(googleOptions =>
-            //{
-            //    googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];
-            //    googleOptions.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
-            //});
+            services.AddAuthentication("Bearer")
+                    .AddIdentityServerAuthentication(options =>
+                    {
+                        options.Authority = Configuration["IdpProvider"];
+                        options.ApiName = "API";
+                        options.ApiSecret = Configuration["Authentication:SecretKey"];
+                        options.RequireHttpsMetadata = false;
+                    });
 
-            //services.AddIdentity<IdentityUser, IdentityRole>()
-            //    .AddEntityFrameworkStores<ApplicationDbContext>()
-            //    .AddDefaultTokenProviders();
+            //services.AddAuthentication("Bearer")
+            //        .AddJwtBearer(options =>
+            //        {
+            //            options.Authority = Configuration["IdpProvider"];
+            //            options.Audience = "API";
+            //            options.RequireHttpsMetadata = false;
+            //        });
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                   .AddJwtBearer(options =>
-                   {
-                       options.RequireHttpsMetadata = false;
-                       options.TokenValidationParameters = new TokenValidationParameters
-                       {
-                           // укзывает, будет ли валидироваться издатель при валидации токена
-                           ValidateIssuer = true,
-                           // строка, представляющая издателя
-                           ValidIssuer = Configuration["Authentication:ISSUER"],
-
-                           // будет ли валидироваться потребитель токена
-                           ValidateAudience = true,
-                           // установка потребителя токена
-                           ValidAudience = Configuration["Authentication:AUDIENCE"],
-                           // будет ли валидироваться время существования
-                           ValidateLifetime = true,
-
-                           // установка ключа безопасности
-                           IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["Authentication:SecretKey"])),
-                           // валидация ключа безопасности
-                           ValidateIssuerSigningKey = true
-                       };
-                   });
+            services.AddCors(options =>
+            {
+                options.AddPolicy("default", policy =>
+                {
+                    policy.WithOrigins("https://localhost:44345")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "ClientApp/build";
             });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
@@ -94,11 +73,10 @@ namespace BankPortalAggregator
                 app.UseHsts();
             }
 
-            //app.UseMiddleware<TokenMiddleware>();
             //app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
-
+            app.UseAuthentication();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

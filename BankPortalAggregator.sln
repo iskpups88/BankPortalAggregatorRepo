@@ -5,7 +5,9 @@ VisualStudioVersion = 15.0.28010.2003
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BankPortalAggregator", "BankPortalAggregator\BankPortalAggregator.csproj", "{64F0E922-CD43-4148-9071-555A5A1059C6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankApi", "BankApi\BankApi.csproj", "{55794A29-C2F4-47E3-ADBC-421C521648FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BankApi", "BankApi\BankApi.csproj", "{55794A29-C2F4-47E3-ADBC-421C521648FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IS", "IS\IS.csproj", "{3A218C1F-8AA7-474A-80D8-0A7B787581D3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{55794A29-C2F4-47E3-ADBC-421C521648FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55794A29-C2F4-47E3-ADBC-421C521648FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{55794A29-C2F4-47E3-ADBC-421C521648FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A218C1F-8AA7-474A-80D8-0A7B787581D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A218C1F-8AA7-474A-80D8-0A7B787581D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A218C1F-8AA7-474A-80D8-0A7B787581D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A218C1F-8AA7-474A-80D8-0A7B787581D3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

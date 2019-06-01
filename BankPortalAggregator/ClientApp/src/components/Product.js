@@ -5,11 +5,15 @@ import InputRange from 'react-input-range';
 import Dropdown from 'react-dropdown'
 import 'react-input-range/lib/css/index.css';
 import 'react-dropdown/style.css'
+import AuthService from '../services/AuthService';
 
 class Product extends Component {
     displayName = Product.name
+    AuthService;
+
     constructor(props) {
         super(props);
+        this.AuthService = AuthService.getInstance();
         this.state = {
             id: props.data.id,
             name: props.data.name,
@@ -25,29 +29,27 @@ class Product extends Component {
 
     onClick = (e) => {
         e.preventDefault();
-        let user = JSON.parse(localStorage.getItem('user'));
-        if (user && user.token) {
-            let variation = this.state.variations.find(variation =>
-                variation.term === this.state.term && variation.percent === this.state.percent);
-            if (variation) {
-                var options = {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', ...requestHelper.authHeader() },
-                    body: JSON.stringify({
-                        Id: this.state.id,
-                        Sum: this.state.sum,
-                        DepositVariations: [variation]
-                    })
-                };
+        this.AuthService.getUser().then(() => this.getProduct());
+    }
 
-                fetch('api/Deposits/', options)
-                    .then(requestHelper.handleResponse, requestHelper.handleError)
-                    .then(response => console.log(response));
-            }
-        } else {
-            this.props.history.push('/login', { redirectUrl: '/products' });
+    getProduct = () => {
+        let variation = this.state.variations.find(variation =>
+            variation.term === this.state.term && variation.percent === this.state.percent);
+        if (variation) {
+            var options = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', ...requestHelper.authHeader() },
+                body: JSON.stringify({
+                    Id: this.state.id,
+                    Sum: this.state.sum,
+                    DepositVariations: [variation]
+                })
+            };
+
+            fetch('api/Deposits/', options)
+                .then(requestHelper.handleResponse, requestHelper.handleError)
+                .then(response => console.log(response));
         }
-        console.log(this.state.id);
     }
 
     render() {
@@ -82,4 +84,4 @@ class Product extends Component {
     }
 }
 
-export const ProductRouter = withRouter(Product);
+export default (withRouter(Product));

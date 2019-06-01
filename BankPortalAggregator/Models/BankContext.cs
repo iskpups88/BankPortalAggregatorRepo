@@ -6,7 +6,7 @@ namespace BankPortalAggregator.Models
     {
         public DbSet<Bank> Banks { get; set; }
         public DbSet<Deposit> Deposits { get; set; }
-        public DbSet<User> Users { get; set; }
+        //public DbSet<User> Users { get; set; }
         public DbSet<Endpoint> Endpoints { get; set; }
         public DbSet<DepositVariation> DepositVariations { get; set; }
 

@@ -4,7 +4,8 @@
   "private": true,
   "dependencies": {
     "bootstrap": "^3.3.7",
-    "react": "^16.0.0",
+    "oidc-client": "^1.7.1",
+    "react": "^16.8.6",
     "react-bootstrap": "^0.31.5",
     "react-dom": "^16.0.0",
     "react-dropdown": "^1.6.4",

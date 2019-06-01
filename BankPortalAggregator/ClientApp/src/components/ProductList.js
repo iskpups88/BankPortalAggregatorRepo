@@ -1,5 +1,5 @@
 ﻿import React, { Component } from 'react';
-import { ProductRouter } from './Product';
+import Product from './Product';
 
 export class ProductList extends Component {
     displayName = ProductList.name
@@ -29,7 +29,7 @@ export class ProductList extends Component {
                 </thead>
                 <tbody>
                     {products.map(product =>
-                        <ProductRouter key={product.id} data={product} />
+                        <Product key={product.id} data={product} />
                     )}
                 </tbody>
             </table>
